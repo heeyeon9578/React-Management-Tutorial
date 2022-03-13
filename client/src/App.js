@@ -33,40 +33,34 @@ const styles = theme=>( {
 
 
 
-//사용자정보 배열로 만들기
-const customers = [
-  {
-  'id':1,
-  'image':'https://placeimg.com/64/64/1',
-  'name' :'나동빈',
-  'birthday': '961222',
-  'gender': '남자',
-  'job': '대학생'
-},
-{
-  'id':2,
-  'image':'https://placeimg.com/64/64/2',
-  'name' :'홍길동',
-  'birthday': '960305',
-  'gender': '남자',
-  'job': '프로그래머'
-},
-{
-  'id':3,
-  'image':'https://placeimg.com/64/64/3',
-  'name' :'이순신',
-  'birthday': '920305',
-  'gender': '남자',
-  'job': '디자이너'
-}
-]
+
 
 
 //key 사용이 매우 중요!!!
 class App extends Component{
 
+  //변경될 수 있는 데이터이므로, state 사용
+  state ={
+    customers: ""
+  }
+
+  //컴포넌트는 생명주기가 존재, 모두 마운트되었을때 실행되게 해줌.
+  componentDidMount(){
+    this.callApi()
+    .then(res => this.setState({customers: res}))
+    .catch(err => console.log(err));
+  }
+
+  //비동기적으로 어떤 내용을 수행할 수 있도록 해줌.
+  callApi = async () =>{
+    const response = await fetch('/api/customers');
+    const body = await response.json();
+    return body;
+  }
+
   render(){
 
+    //props는 변경될 수 없는 데이터에 쓰임
     const {classes} = this.props;
     return(
      
@@ -83,7 +77,9 @@ class App extends Component{
             </TableRow>
           </TableHead>
           <TableBody>
-           {customers.map(c=>{ return ( <Customer key={c.id} id ={c.id} image ={c.image} name={c.name} birthday ={c.birthday} gender ={c.gender} job={c.job} />)})}
+           {this.state.customers ? this.state.customers.map(c=>{ 
+             return ( <Customer key={c.id} id ={c.id} image ={c.image} name={c.name} birthday ={c.birthday} gender ={c.gender} job={c.job} />)
+            }):""}
           </TableBody>
         </Table>
         </Paper>
